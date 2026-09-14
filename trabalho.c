@@ -1,3 +1,4 @@
+```c
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -7,32 +8,37 @@
 struct Filme {
 	int id;
 	int status;
+	int favorito;
 	char nome[MAX];
 	int tipo;
 	int nota;
 };
+
 typedef struct Filme LFilme;
 
-void cadastrar(LFilme **vetor, int pos) {
-	
-	*vetor = realloc(*vetor, (pos + 1) * sizeof(LFilme));
+
+void cadastrar(LFilme vetor[], int pos) {
 	
 	printf("Nome: ");
-	fgets((*vetor)[pos].nome, MAX-1, stdin);
+	fgets((vetor)[pos].nome, MAX-1, stdin);
 	
 	printf("Tipo: ");
-	scanf("%d", &(*vetor)[pos].tipo);
+	scanf("%d", &(vetor)[pos].tipo);
 	
 	printf("Nota: ");
-	scanf("%d", &(*vetor)[pos].nota);
+	scanf("%d", &(vetor)[pos].nota);
 	
-	(*vetor)[pos].id = pos;
-	(*vetor)[pos].status = 1;
+	printf("Favoritar? 1-Sim 0-Nao: ");
+	scanf("%d", &(vetor)[pos].favorito);
+	
+	(vetor)[pos].id = pos;
+	(vetor)[pos].status = 1;
 	
 	printf("Filme cadastrado com sucesso!\n\n");	
 }
 
-void listar(LFilme *vetor, int n) {
+
+void listar(LFilme vetor[], int n) {
 	
 	int i;
 	
@@ -45,13 +51,35 @@ void listar(LFilme *vetor, int n) {
 			printf("Nome: %s", vetor[i].nome);
 			printf("Tipo: %d\n", vetor[i].tipo);
 			printf("Nota: %d\n", vetor[i].nota);
+			printf("Favorito: %d\n", vetor[i].favorito);
 		}	
 	}
 	
 	printf("\n");		
 }
 
-void pesquisar(LFilme *vetor, int n) {
+
+void listarFavoritos(LFilme favoritos[], int nf) {
+	
+	int i;
+	
+	printf("\nFilmes favoritos:\n");
+	
+	for (i=0; i<nf; i++) {
+		
+		if (favoritos[i].favorito == 1) {
+			printf("Id: %d\n", favoritos[i].id);
+			printf("Nome: %s", favoritos[i].nome);
+			printf("Tipo: %d\n", favoritos[i].tipo);
+			printf("Nota: %d\n", favoritos[i].nota);
+		}
+	}
+	
+	printf("\n");
+}
+
+
+void pesquisar(LFilme vetor[], int n) {
 	
 	int i, encontrou;
 	char nome[MAX];
@@ -68,6 +96,7 @@ void pesquisar(LFilme *vetor, int n) {
 			printf("Nome: %s", vetor[i].nome);
 			printf("Tipo: %d\n", vetor[i].tipo);
 			printf("Nota: %d\n", vetor[i].nota);
+			printf("Favorito: %d\n", vetor[i].favorito);
 			encontrou = 1;
 		}		
 	}
@@ -75,10 +104,12 @@ void pesquisar(LFilme *vetor, int n) {
 	if (encontrou == 0) {
 		printf("Filme nao encontrada\n");
 	}
+	
 	printf("\n");
 }
 
-void remover(LFilme *vetor, int n) {
+
+void remover(LFilme vetor[], int n) {
 	
 	int id;
 	
@@ -96,10 +127,12 @@ void remover(LFilme *vetor, int n) {
 	}
 	
 	vetor[id].status = 0;
+	
 	printf("Filme removido!\n\n");
 }
 
-void atualizar(LFilme *vetor, int n) {
+
+void atualizar(LFilme vetor[], int n) {
 	
 	int id;
 	
@@ -120,6 +153,7 @@ void atualizar(LFilme *vetor, int n) {
 	printf("\nNome: %s", vetor[id].nome);
 	printf("Tipo: %d\n", vetor[id].tipo);
 	printf("Nota: %d\n", vetor[id].nota);
+	printf("Favorito: %d\n", vetor[id].favorito);
 	
 	printf("Entre com as novas informações:\n");
 	
@@ -132,8 +166,12 @@ void atualizar(LFilme *vetor, int n) {
 	printf("nota: ");
 	scanf("%d", &vetor[id].nota);
 	
+	printf("Favoritar? 1-Sim 0-Nao: ");
+	scanf("%d", &vetor[id].favorito);
+	
 	printf("Cadastro atualizado!\n\n");
 }
+
 
 void menu() {
 	
@@ -142,16 +180,21 @@ void menu() {
 	printf("3 - Pesquisar\n");
 	printf("4 - Remover\n");
 	printf("5 - Atualizar\n");
-	printf("6 - Sair\n");
+	printf("6 - Listar favoritos\n");
+	printf("7 - Sair\n");
 	printf("Entre com a opcao: ");
 } 
+
 
 int main() {
 
     LFilme *vetor = NULL;
-    int n, op;
+    LFilme *favoritos = NULL;
+    
+    int n, nf, op;
 
     n = 0;
+    nf = 0;
 
     do {
         menu();
@@ -161,8 +204,37 @@ int main() {
         switch (op) {
 
             case 1:
-                cadastrar(&vetor, n);
-                n++;
+            	if(n == 0){
+            		vetor = (LFilme *) malloc(sizeof(LFilme));
+				}else{
+					vetor = (LFilme *) realloc(vetor , (n+1) * sizeof(LFilme));
+				}
+				
+				if(vetor == NULL){
+					printf("Error");
+					exit(1);
+				}
+				
+				cadastrar(vetor, n);
+				
+				if(vetor[n].favorito == 1) {
+					
+					if(nf == 0) {
+						favoritos = (LFilme *) malloc(sizeof(LFilme));
+					}else{
+						favoritos = (LFilme *) realloc(favoritos, (nf+1) * sizeof(LFilme));
+					}
+					
+					if(favoritos == NULL) {
+						printf("Error");
+						exit(1);
+					}
+					
+					favoritos[nf] = vetor[n];
+					nf++;
+				}
+				
+				n++;
                 break;
 
             case 2:
@@ -182,6 +254,10 @@ int main() {
                 break;
 
             case 6:
+                listarFavoritos(favoritos, nf);
+                break;
+
+            case 7:
                 break;
 
             default:
@@ -189,9 +265,10 @@ int main() {
                 break;
         }
 
-    } while (op != 6);
+    } while (op != 7);
 
     free(vetor);
+    free(favoritos);
 
     return 0;
 }
