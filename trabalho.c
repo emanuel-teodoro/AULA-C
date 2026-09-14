@@ -1,4 +1,3 @@
-```c
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -155,7 +154,7 @@ void atualizar(LFilme vetor[], int n) {
 	printf("Nota: %d\n", vetor[id].nota);
 	printf("Favorito: %d\n", vetor[id].favorito);
 	
-	printf("Entre com as novas informações:\n");
+	printf("Entre com as novas informaÃ§Ãµes:\n");
 	
 	printf("Nome: ");
 	fgets(vetor[id].nome, MAX-1, stdin);
